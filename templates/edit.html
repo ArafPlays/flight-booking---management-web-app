@@ -1,0 +1,48 @@
+{%extends 'base.html'%}
+{%block title%}Admin{%endblock%}
+{%block body%}
+    <form method="post">
+        <h2>Edit Flight</h2>
+
+        <label for="cityFrom">From</label>
+        <select name="cityFrom" required >
+            <option value="Sydney" {%if flight_to_edit.cityFrom=="Sydney"%}selected{%endif%}>Sydney</option>
+            <option value="Dhaka" {%if flight_to_edit.cityFrom=="Dhaka"%}selected{%endif%}>Dhaka</option>
+            <option value="Beijing" {%if flight_to_edit.cityFrom=="Beijing"%}selected{%endif%}>Beijing</option>
+        </select>
+
+        <label for="cityTo">To</label>
+        <select name="cityTo" required>
+            <option value="Kuala Lumpur" {%if flight_to_edit.cityTo=="Kuala Lumpur"%}selected{%endif%}>Kuala Lumpur</option>
+            <option value="Bankok" {%if flight_to_edit.cityTo=="Bankok"%}selected{%endif%}>Bankok</option>
+            <option value="Mykonos" {%if flight_to_edit.cityTo=="Mykonos"%}selected{%endif%}>Mykonos</option>
+        </select>
+
+        <label for="departDate">Depart Date</label>
+        <input type="date" name="departDate" required value="{{flight_to_edit.departDate}}">
+
+        <label for="arrivalDate">Arrival Date</label>
+        <input type="date" name="arrivalDate" required value="{{flight_to_edit.arrivalDate}}">
+
+        <label for="departTime" >Depart time</label>
+        <input type="time" name="departTime" value="{{flight_to_edit.departTime}}" />
+
+        <label for="arrivalTime" >Arrival time</label>
+        <input type="time" name="arrivalTime" value="{{flight_to_edit.arrivalTime}}"/>
+
+        <label for="duration" >Duration</label>
+        <input type="text" name="duration" placeholder="07h 35m" value="{{flight_to_edit.duration}}"/>
+
+        <label for="fclass">Class</label>
+        <select name="fclass" required>
+            <option value="Economy" {%if flight_to_edit.fclass=="Economy"%}selected{%endif%}>Economy</option>
+            <option value="Business" {%if flight_to_edit.fclass=="Business"%}selected{%endif%}>Business</option>
+            <option value="First" {%if flight_to_edit.fclass=="First"%}selected{%endif%}>First Class</option>
+        </select>
+
+        <label for="price" >Price</label>
+        <input type="number" name="price" value="{{flight_to_edit.price}}"/>
+
+        <button type="submit">Edit Flight</button>
+    </form>
+{%endblock%}

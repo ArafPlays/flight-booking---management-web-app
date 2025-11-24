@@ -1,0 +1,52 @@
+{%extends 'base.html'%}
+{%block title%}Booking Summary{%endblock%}
+{%block body%}
+    <h2>Booking Summary</h2>
+    <!-- query database using flight num saved in session and display flight info + fee here-->
+    <div>
+        <h4>Travel Summary</h4>
+        <p>
+            Departure Flight:<br/>
+            Flight number: {{depart_flight.num}}<br/>
+            {{depart_flight.cityFrom}} to {{depart_flight.cityTo}}<br/>
+            Flight date: {{depart_flight.departDate}}<br/>
+            Departure Time: {{depart_flight.departTime}}<br/>
+            Arrival date: {{depart_flight.arrivalTime}}<br/>
+        </p>
+        {%if return_flight %}
+        <p>
+            Return flight:<br/>
+            Flight number: {{return_flight.num}}<br/>
+            {{return_flight.cityFrom}} to {{return_flight.cityTo}}<br/>
+            Flight date: {{return_flight.departDate}}<br/>
+            Departure Time: {{return_flight.departTime}}<br/>
+            Arrival date: {{return_flight.arrivalTime}}<br/>
+        </p>
+        {%endif%}
+        <!-- in our case, class has to be same for both flights-->
+         <p>
+            Class: {{depart_flight.fclass}}<br/>
+            Seat number: {{booking.seat}}<br/>
+            Meal: {{booking.meal}}
+        </p>
+    </div>
+    <div>
+        <h4>Fee summary</h4>
+        <p>
+            Departure Flight cost: ${{depart_flight.price}}<br/>
+            {%if return_flight %}
+                Return Flight cost: ${{return_flight.price}}<br/>
+                Total: ${{depart_flight.price+return_flight.price}}
+                {%else%}
+                Return Flight cost: N/A <br/>
+                Total: ${{depart_flight.price}}
+            {%endif%}
+        </p>
+    </div>
+    <div>
+        <h4>Passenger summary</h4>
+        <p>{{passenger.title}} {{passenger.fname}} {{passenger.lname}}</p>
+        <p>{{passenger.phone}}</p>
+        <p>{{passenger.email}}</p>
+    </div>
+{%endblock%}

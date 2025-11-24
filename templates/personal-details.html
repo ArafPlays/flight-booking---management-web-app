@@ -1,0 +1,33 @@
+{%extends 'base.html'%}
+{%block title%}Personal Details{%endblock%}
+{%block body%}
+    <form method="post">
+        <h2>Personal Details</h2>
+
+        <label for="title">Title</label>
+        <select name="title" required>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Mr.">Mr.</option>
+            <option value="Dr.">Dr.</option>
+        </select>
+
+        <label for="fname">First name</label>
+        <input type="text" name="fname" required>
+
+        <label for="fname">Last name</label>
+        <input type="text" name="lname" required>
+
+        <label for="nationality">Nationality</label>
+        <input type="text" name="nationality" required>
+
+        <input id="female" name="gender" value="female" type="radio" required/>
+        <label for="female">Female</label>
+        <input id="male" name="gender" value="male" type="radio" required/>
+        <label for="male">Male</label>
+
+        <label for="email" >Email</label>
+        <input type="email" name="email"/>
+
+        <button type="submit">Next</button>
+    </form>
+{%endblock%}

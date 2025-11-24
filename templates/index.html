@@ -1,0 +1,44 @@
+{%extends 'base.html'%}
+{%block title%}Booking Page{%endblock%}
+{%block body%}
+    <form method="post">
+        <h2>Where do you want to go?</h2>
+        <label for="cityFrom">From</label>
+        <select name="cityFrom" required>
+            <option value="Sydney">Sydney</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Dhaka">Dhaka</option>
+        </select>
+
+        <label for="cityTo">From</label>
+        <select name="cityTo" required>
+            <option value="Dhaka">Dhaka</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Sydney">Sydney</option>
+        </select>
+
+        <label for="departDate">Depart Date</label>
+        <input type="date" name="departDate" required>
+
+        <label for="returnDate">Return Date</label>
+        <input type="date" name="returnDate">
+
+        <label for="fclass">Class</label>
+        <select name="fclass" required>
+            <option value="Economy">Economy</option>
+            <option value="Business">Business</option>
+            <option value="First">First Class</option>
+        </select>
+
+        <label for="passenger_num" >Passengers</label>
+        <select name="passenger_num" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+{%endblock%}

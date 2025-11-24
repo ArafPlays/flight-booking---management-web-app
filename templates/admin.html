@@ -1,0 +1,57 @@
+{%extends 'base.html'%}
+{%block title%}Admin{%endblock%}
+{%block body%}
+    <form method="post">
+        <h2>Add Flight</h2>
+
+        <label for="cityFrom">From</label>
+        <select name="cityFrom" required>
+            <option value="Sydney">Sydney</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Dhaka">Dhaka</option>
+        </select>
+
+        <label for="cityTo">To</label>
+        <select name="cityTo" required>
+            <option value="Dhaka">Dhaka</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Sydney">Sydney</option>
+        </select>
+
+        <label for="departDate">Depart Date</label>
+        <input type="date" name="departDate" required>
+
+        <label for="arrivalDate">Arrival Date</label>
+        <input type="date" name="arrivalDate" required>
+
+        <label for="departTime" >Depart time</label>
+        <input type="time" name="departTime"/>
+
+        <label for="arrivalTime" >Arrival time</label>
+        <input type="time" name="arrivalTime"/>
+
+        <label for="duration" >Duration</label>
+        <input type="text" name="duration" placeholder="07h 35m"/>
+
+        <label for="fclass">Class</label>
+        <select name="fclass" required>
+            <option value="Economy">Economy</option>
+            <option value="Business">Business</option>
+            <option value="First">First Class</option>
+        </select>
+
+        <label for="price" >Price</label>
+        <input type="number" name="price"/>
+
+        <button type="submit">Add Flight</button>
+    </form>
+    <div>
+        <h2>Available flights: </h2>
+        {%for f in all_flights%}
+            <p>Flight Number: {{f.num}}, {{f.cityFrom}} to {{f.cityTo}},{{f.departDate}},{{f.departTime}},{{f.fclass}},${{f.price}}
+                <a href="/admin/edit/{{f.num}}">Edit</a> 
+                <a href="/admin/delete/{{f.num}}">Delete</a>    
+            </p>
+        {%endfor%}
+    </div>
+{%endblock%}

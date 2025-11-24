@@ -1,0 +1,30 @@
+{%extends 'base.html'%}
+{%block title%}Seat Selection{%endblock%}
+{%block body%}
+    <h2>Choose seat: </h2>
+    <!-- tried to use a clean and less repetitive way to display seats -->
+    <section id="seatSelector" class="container w-md-50 mt-5">
+        <div class="mb-5">
+            <p style="text-align:center">Front of Airplane</p>
+        </div>
+        <!-- loop to display seat number-->
+        {%for i in [1,2,3,4,5]%}
+            <div class="row mb-4">
+                <div class="col">
+                    <p>{{i}}</p>
+                </div>
+                {%for j in ['A','B','C','D','E','F ']%}
+                <div class="col">
+                    <button name="seatNumber" class="btn btn-outline-danger">{{i}}{{j}}</button>
+                </div>
+                {%endfor%}
+            </div>
+        {%endfor%}
+        <div class="mb-5">
+            <p style="text-align:center">Back of Airplane</p>
+        </div>
+        <p>Chosen: {{chosenSeat}}</p>
+        <a href="/save-seat/{{chosenSeat}}">Next</a>
+    </section>
+    <script src="../static/js/seat.js"></script>
+{%endblock%}

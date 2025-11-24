@@ -1,0 +1,42 @@
+{%extends 'base.html'%}
+{%block title%}Payment{%endblock%}
+{%block body%}
+    <h2>Check Details & Make Payment</h2>
+    <!-- query database using flight num saved in session and display flight info + fee here-->
+    <div>
+        <h4>Travel Summary</h4>
+        <p>Departure flight:</p>
+        <p>Flight number: {{flight.num}}</p>
+        <p>{{flight.cityFrom}} to {{flight.cityTo}}</p>
+        <p>Flight date: {{flight.departDate}}</p>
+        <p>Departure Time: {{flight.departTime}}</p>
+        <p>Arrival date: {{flight.arrivalTime}}</p>
+        <p>Class: {{flight.fclass}}</p>
+        <p>Seat number: {{session.chosenSeat}}</p>
+        <p>Meal: {{session.preference}}</p>
+    </div>
+    <div>
+        <h4>Fee summary</h4>
+        <p>Departure Flight cost: ${{flight.price}}</p>
+        <p>Return Flight cost: $</p>
+    </div>
+    <div>
+        <h4>Passenger summary</h4>
+        <p>{{session.title}} {{session.fname}} {{session.lname}}</p>
+        <p>{{session.phone}}</p>
+        <p>{{session.email}}</p>
+    </div>
+    <div>
+        <h4>Payment</h4>
+        <p>Payment not supported, just click complete booking.</p>
+        <form method="POST">
+            <label for="card_num">Card number</label>
+            <input name="card_num" type="number" disabled/>
+            <label for="exp_date">Exp Date</label>
+            <input name="exp_date" type="date" disabled/>
+            <label for="cvv">CVV</label>
+            <input name="cvv" type="number" disabled/>
+            <input type="submit" value="Complete booking"/>
+        </form>
+    </div>
+{%endblock%}

@@ -1,0 +1,12 @@
+{%extends 'base.html'%}
+{%block title%}Select Departing Flight{%endblock%}
+{%block body%}
+    <div>
+        <h2>Matching flights from {{matching_flights.cityFrom}} to {{matching_flights.cityTo}}: </h2>
+        {%for f in matching_flights%}
+            <p>Flight Number: {{f.num}}, {{f.cityFrom}} to {{f.cityTo}},{{f.departDate}},{{f.departTime}},{{f.arrivalTime}},{{f.fclass}},${{f.price}}
+                <a href='/save_flight/{{f.num}}'">Select</a>
+            </p>
+        {%endfor%}
+    </div>
+{%endblock%}
