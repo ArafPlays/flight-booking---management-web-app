@@ -2,7 +2,7 @@ from flask import Flask,render_template,request,session,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 import datetime
-# to store list of passengers in booking table
+import random # to generate a random booking reference number
 
 app=Flask(__name__)
 app.secret_key = "^@^$Lrj$@$JJ223828AJEJA2828$"
@@ -65,7 +65,8 @@ class Booking(db.Model):
     # store booking preferences
     meal=db.Column('meal',db.String(10),nullable=False)
     seat=db.Column('seat',db.String(3),nullable=False)
-
+    # booking reference (used for verification before viewing and managing and viewing bookings)
+    ref = db.Column('ref',db.Integer,nullable=False)
 @app.route("/",methods=['GET','POST'])
 def index():
     if request.method=='GET':
@@ -189,8 +190,8 @@ def payment():
             # if return date wasn't empty, customer will have already selected and saved a return flight number into session, we simply access and store it into a variable
             return_flight_num=session['return_num']
 
-        # add a list of passenger id to booking
-        new_booking = Booking(depart_flight_num=depart_flight_num,return_flight_num=return_flight_num,meal=preference,seat=chosenSeat)
+        booking_ref = random.randint(100,10000)
+        new_booking = Booking(depart_flight_num=depart_flight_num,return_flight_num=return_flight_num,meal=preference,seat=chosenSeat,ref=booking_ref)
         db.session.add(new_booking)
         db.session.commit()
         passenger_num=session['passenger_num']
@@ -214,20 +215,30 @@ def payment():
 
         # clear session after everything has been saved to database
         session.clear()
-        return redirect(url_for('confirmed',booking_id=new_booking.id))
+        return redirect(url_for('confirmed',booking_id=new_booking.id,booking_ref=new_booking.ref))
 
-@app.route("/confirmed/<int:booking_id>")
-def confirmed(booking_id):
+@app.route("/confirmed/<int:booking_id>/<int:booking_ref>")
+def confirmed(booking_id,booking_ref):
     # get the booking, flight and passenger associated with this booking id.
     booking=Booking.query.filter_by(id=booking_id).first()
-    
-    depart_flight_num=booking.depart_flight_num
-    depart_flight = Flight.query.filter_by(num=depart_flight_num).first()
-    return_flight_num=booking.return_flight_num
-    return_flight = Flight.query.filter_by(num=return_flight_num).first()
-    passenger_list = booking.passengers
-    return render_template('confirmed.html',booking=booking,depart_flight=depart_flight,return_flight=return_flight,passengers=passenger_list)
+    if booking.ref == booking_ref:
+        depart_flight_num=booking.depart_flight_num
+        depart_flight = Flight.query.filter_by(num=depart_flight_num).first()
+        return_flight_num=booking.return_flight_num
+        return_flight = Flight.query.filter_by(num=return_flight_num).first()
+        passenger_list = booking.passengers
+        return render_template('confirmed.html',booking=booking,depart_flight=depart_flight,return_flight=return_flight,passengers=passenger_list)
+    else:
+        return "Booking reference number isn't correct."
 
+@app.route("/manage", methods=['GET','POST'])
+def manage():
+    output = "Manage booking"
+    output += "<input name='booking_id' type=number/>"
+    # user needs to enter last name of any passenger in the booking, we will use for loop to check
+    output += "<input name='lname' type=lname/>"
+    return output
+    # 
 # flights can be added to flights database on this page
 @app.route("/admin",methods=['GET','POST'])
 def admin():
