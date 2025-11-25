@@ -1,8 +1,7 @@
 {%extends 'base.html'%}
 {%block title%}Manage Booking{%endblock%}
 {%block body%}
-    <p>Booking ID: {{booking.id}}<br/>
-    Booking Ref: {{booking.ref}}</p>
+    <h2 class="display-5">Edit Booking ID {{booking.id}} (Ref: {{booking.ref}})</h2>
 
     
     <!-- take user to confirmed function along with url query parameters -->
@@ -32,7 +31,7 @@
 
         <div>
             <h4>Update meal</h4>
-            <label for="meal" >Meal: </label>
+            <label for="meal">Meal: </label>
             <select name="meal">
                 <!-- the if statement pre selects current meal -->
                 <option value="No preference" {%if booking.meal=='No preference'%}selected{%endif%}>No preference</option>
@@ -45,7 +44,7 @@
 
         <br/>
 
-        <button type="submit" class="btn btn-outline-danger">Save Changes</button>
+        <button type="submit" class="btn btn-outline-primary">Save Changes</button>
     </form>
     <br/>
     <a href="{{url_for('cancel',booking_id=booking.id,booking_ref=booking.ref)}}">Delete Booking</a>

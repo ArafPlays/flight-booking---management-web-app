@@ -278,7 +278,8 @@ def manage(booking_id,booking_ref):
         # get the booking
         booking = Booking.query.filter_by(id=booking_id).first()
         # booking.ref is the actual ref, booking_ref is user provided. We check if they match.
-        if booking.ref == booking_ref:
+        # check if booking actually exists and then check ref
+        if booking and booking.ref == booking_ref:
             passengers = booking.passengers
             return render_template('manage.html',booking=booking,passengers=passengers)
         return f"Booking id or reference isn't correct"
