@@ -2,12 +2,14 @@ from flask import Flask,render_template,request,session,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 
+import random # to generate a random booking reference number
+
 # imports for admin user authentication and hashing
 # loginManager only handles when you're logged in/logged out and who the current logged in user is. It stores these in sessions.
 from flask_login import LoginManager
 from flask_login import UserMixin
 from flask_login import login_user, logout_user, current_user, login_required
-from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt # for hashing admin password
 
 app=Flask(__name__)
 app.secret_key = "^@^$Lrj$@$JJ223828AJEJA2828$"
@@ -71,6 +73,8 @@ class Booking(db.Model):
     # booking reference (used for verification before viewing and managing and viewing bookings)
     ref = db.Column('ref',db.Integer,nullable=False)
 
+# UserMixin is a helper class provided by Flask-Login that gives your user model all the methods and properties Flask-Login expects.
+# it provides properties like is_authenticated
 class Admin(db.Model,UserMixin):
     id = db.Column('id',db.Integer,primary_key=True)
     username = db.Column('username',db.String(10),nullable=False,unique=True)
@@ -154,6 +158,7 @@ def personal_details():
 # we currently don't verify seat selection in database. This means 2 people can book the same seat on the same flight. This needs to be fixed in future updates.
 @app.route("/seat")
 def seat():
+    # seat selection url paramter is sent by JavaScript (seat.js)
     chosenSeat = request.args['chosenSeat']
     return render_template('seat.html',chosenSeat=chosenSeat)
 
@@ -175,8 +180,6 @@ def save_meal(preference):
     session['preference'] = preference
     # redirect to next page
     return redirect(url_for('payment'))
-
-import random # to generate a random booking reference number
 
 @app.route("/payment",methods=['GET','POST'])
 def payment():
@@ -312,7 +315,7 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# user loader
+# user loader (from flask-login docs)
 @login_manager.user_loader
 def load_user(user_id):
     return Admin.query.get(int(user_id))
@@ -320,6 +323,7 @@ def load_user(user_id):
 # flights can be added/edited/deleted to flights database on this page
 @app.route("/admin",methods=['GET','POST'])
 def admin():
+    #  if current user is logged in, we show them the page, otherwise they'll be taken to login page
     if current_user.is_authenticated:
         if request.method=='GET':
             # get all flights so we can show them on the page
@@ -338,6 +342,8 @@ def admin():
             new_flight = Flight(cityFrom=cityFrom,cityTo=cityTo,departDate=departDate,arrivalDate=arrivalDate,departTime=departTime,arrivalTime=arrivalTime,duration=duration,fclass=fclass,price=price)
             db.session.add(new_flight)
             db.session.commit()
+            
+            flash("Flight added successfully.")
             # refresh the page
             return redirect(url_for('admin'))
     else:
@@ -384,6 +390,7 @@ def edit(num):
 # create new admin account
 @app.route('/admin/create',methods=['GET','POST'])
 def create():
+    # if user is already logged in, take them back to admin page
     if current_user.is_authenticated:
         flash('You are already logged in.')
         return redirect(url_for('admin'))
@@ -391,12 +398,13 @@ def create():
         if request.method=='GET':
             return render_template('create.html')
         elif request.method=='POST':
-            # get username and pass that user put in
+            # get username and pass that user
             username=request.form['username']
             password=request.form['password']
             # generate hash from password using bcrypt
             hash = bcrypt.generate_password_hash(password).decode('utf-8')
             # add new admin to database
+            # we store the hash, not the password. So if database is leaked, passwords are safe.
             new_admin = Admin(username=username,hash=hash)
             db.session.add(new_admin)
             db.session.commit()
@@ -406,6 +414,7 @@ def create():
 # login to existing admin account
 @app.route('/admin/login',methods=['GET','POST'])
 def login():
+    # if user is already logged in, take them back to admin page
     if current_user.is_authenticated:
         flash('You are already logged in.')
         return redirect(url_for('admin'))
@@ -418,7 +427,7 @@ def login():
             # generating hash again and checking doesnt work because bcrypt automatically adds a random salt,so the hashes dont match
             # we need to use check_password_hash instead
             admin = Admin.query.filter_by(username=username).first()
-            
+            # check if user provided password's hash and database stored hash matches
             if bcrypt.check_password_hash(admin.hash,password):
                 # using built in flask-login library functions to login the admin
                 login_user(admin)
@@ -430,6 +439,7 @@ def login():
 
 @app.route('/admin/logout')
 def logout():
+    # built in logout_user function by flask-login
     logout_user()
     flash('Successfully logged out.')
     return redirect(url_for('login'))
