@@ -1,6 +1,8 @@
 {%extends 'base.html'%}
 {%block title%}Personal Details{%endblock%}
 {%block body%}
+    {% include 'components/breadcrumb.html'%}
+
     <form method="post">
         <h2>Personal Details</h2>
         <!-- display this form multiple times based on passenger num-->

@@ -1,0 +1,38 @@
+<nav class="container mt-4">
+    <ol class="breadcrumb">
+        <!-- departure is the first item so it will always be active-->
+        <!-- then we make links active based on what keys are saved to session -->
+        <!-- example: if return_num exists in session, that means user has selected it already. We can make the next link active.-->
+        <!-- session keys: num, return_num, email,chosenSeat,preference-->
+        <li class="breadcrumb-item">
+            <a href="{{url_for('departure')}}">Departure</a>
+        </li>
+
+        <!-- if round trip, only then will section will be viewable -->
+        {%if session.returnDate!=""%}
+        <li class="breadcrumb-item">
+            <a {%if session.num%} href="{{url_for('return_flight')}}"{%endif%}>Return</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a {%if session.return_num%} href="{{url_for('personal_details')}}"{%endif%}>Details</a>
+        </li>
+        {%else%}
+        <li class="breadcrumb-item">
+            <a {%if session.num%} href="{{url_for('personal_details')}}"{%endif%}>Details</a>
+        </li>
+        {%endif%}
+        
+        <li class="breadcrumb-item">
+            <a {%if session.email%} href="{{url_for('seat',chosenSeat='NA')}}"{%endif%}>Seat</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a {%if session.chosenSeat%} href="{{url_for('meal')}}"{%endif%}>Meal</a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a {%if session.preference%} href="{{url_for('payment')}}"{%endif%}>Payment</a>
+        </li>
+    </ol>
+</nav>
