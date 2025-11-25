@@ -140,6 +140,9 @@ def personal_details():
         # redirect to next page of wizard
         return redirect(url_for("seat",chosenSeat='NA'))
 
+# we currently only have 1 type of plane, so 1 seat layout.
+# when we have multiple planes, seat info needs to be stored in a new plane table.
+# we currently don't verify seat selection in database. This means 2 people can book the same seat on the same flight. This needs to be fixed in future updates.
 @app.route("/seat")
 def seat():
     chosenSeat = request.args['chosenSeat']
@@ -149,8 +152,6 @@ def seat():
 def save_seat(chosenSeat):
     # save seat to session
     session['chosenSeat'] = chosenSeat
-    
-    # return f"{session['chosenSeat']}"
 
     # redirect to next page
     return redirect(url_for('meal'))

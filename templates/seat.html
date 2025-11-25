@@ -2,7 +2,7 @@
 {%block title%}Seat Selection{%endblock%}
 {%block body%}
     <h2>Choose seat: </h2>
-    <p>We only have 1 fleet and seat layout so far for all flights.</p>
+    <p>1 free seat selection on us. If you have multiple passengers, you must get the rest during check-in.</p>
     <!-- tried to use a clean and less repetitive way to display seats -->
     <section id="seatSelector" class="container w-md-50 mt-5">
         <div class="mb-5">
@@ -16,7 +16,9 @@
                 </div>
                 {%for j in ['A','B','C','D','E','F ']%}
                 <div class="col">
-                    <button name="seatNumber" class="btn btn-outline-danger">{{i}}{{j}}</button>
+                    <button name="seatNumber" class="btn btn-outline-danger">
+                        {{i}}{{j}}
+                    </button>
                 </div>
                 {%endfor%}
             </div>
@@ -26,6 +28,7 @@
         </div>
         <p>Chosen: {{chosenSeat}}</p>
         <a href="/save-seat/{{chosenSeat}}">Next</a>
+        <a href="/save-seat/NA">Skip</a>
     </section>
     <script src="../static/js/seat.js"></script>
 {%endblock%}

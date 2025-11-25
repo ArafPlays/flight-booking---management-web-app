@@ -7,15 +7,15 @@
         <label for="cityFrom">From</label>
         <select name="cityFrom" required >
             <option value="Sydney" {%if flight_to_edit.cityFrom=="Sydney"%}selected{%endif%}>Sydney</option>
-            <option value="Dhaka" {%if flight_to_edit.cityFrom=="Dhaka"%}selected{%endif%}>Dhaka</option>
             <option value="Beijing" {%if flight_to_edit.cityFrom=="Beijing"%}selected{%endif%}>Beijing</option>
+            <option value="Dhaka" {%if flight_to_edit.cityFrom=="Dhaka"%}selected{%endif%}>Dhaka</option>
         </select>
 
         <label for="cityTo">To</label>
         <select name="cityTo" required>
-            <option value="Kuala Lumpur" {%if flight_to_edit.cityTo=="Kuala Lumpur"%}selected{%endif%}>Kuala Lumpur</option>
-            <option value="Bankok" {%if flight_to_edit.cityTo=="Bankok"%}selected{%endif%}>Bankok</option>
-            <option value="Mykonos" {%if flight_to_edit.cityTo=="Mykonos"%}selected{%endif%}>Mykonos</option>
+            <option value="Dhaka" {%if flight_to_edit.cityTo=="Dhaka"%}selected{%endif%}>Dhaka</option>
+            <option value="Beijing" {%if flight_to_edit.cityTo=="Beijing"%}selected{%endif%}>Beijing</option>
+            <option value="Sydney" {%if flight_to_edit.cityTo=="Sydney"%}selected{%endif%}>Sydney</option>
         </select>
 
         <label for="departDate">Depart Date</label>
@@ -31,7 +31,7 @@
         <input type="time" name="arrivalTime" value="{{flight_to_edit.arrivalTime}}"/>
 
         <label for="duration" >Duration</label>
-        <input type="text" name="duration" placeholder="07h 35m" value="{{flight_to_edit.duration}}"/>
+        <input type="text" name="duration" placeholder="ex: 07h 35m" value="{{flight_to_edit.duration}}"/>
 
         <label for="fclass">Class</label>
         <select name="fclass" required>
