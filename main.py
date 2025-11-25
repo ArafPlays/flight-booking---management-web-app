@@ -1,8 +1,13 @@
 from flask import Flask,render_template,request,session,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
-import datetime
-import random # to generate a random booking reference number
+
+# imports for admin user authentication and hashing
+# loginManager only handles when you're logged in/logged out and who the current logged in user is. It stores these in sessions.
+from flask_login import LoginManager
+from flask_login import UserMixin
+from flask_login import login_user, logout_user, current_user, login_required
+from flask_bcrypt import Bcrypt
 
 app=Flask(__name__)
 app.secret_key = "^@^$Lrj$@$JJ223828AJEJA2828$"
@@ -40,9 +45,11 @@ class Passenger(db.Model):
     nationality=db.Column("nationality",db.String(10),nullable=False)
     gender=db.Column("gender",db.String(10),nullable=False)
 
-    booking = db.relationship('Booking',secondary=booking_passenger,backref='passengers')
     # due to backref, both passenger.bookings and booking.passengers have been created.
-
+    # association table is used for many to many relationship
+    # because of backref, we can access xbooking.passengers and get a list of all the passengers on xbooking.
+    booking = db.relationship('Booking',secondary=booking_passenger,backref='passengers')
+    
 class Booking(db.Model):
     # booking id
     id=db.Column('id',db.Integer,primary_key=True)
@@ -56,11 +63,6 @@ class Booking(db.Model):
     # we need to specify
     return_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=False) # nullable false because it has to be 0 (no return) or a flight id
 
-    # specifying foreign keys
-    depart_flight=db.relationship('Flight',foreign_keys=[depart_flight_num],backref='depart_bookings')
-    return_flight=db.relationship('Flight',foreign_keys=[return_flight_num],backref='return_bookings')
-    # backref automatically gives us access to flight.departure_bookings and flight.return_bookings
-
     # store booking preferences
     meal=db.Column('meal',db.String(10),nullable=False)
     seat=db.Column('seat',db.String(3),nullable=False)
@@ -68,6 +70,13 @@ class Booking(db.Model):
     phone=db.Column('phone',db.String(15),nullable=False)
     # booking reference (used for verification before viewing and managing and viewing bookings)
     ref = db.Column('ref',db.Integer,nullable=False)
+
+class Admin(db.Model,UserMixin):
+    id = db.Column('id',db.Integer,primary_key=True)
+    username = db.Column('username',db.String(10),nullable=False,unique=True)
+    # bcrypt character is 60 characters
+    hash=db.Column('hash',db.String(60),nullable=False)
+
 @app.route("/",methods=['GET','POST'])
 def index():
     if request.method=='GET':
@@ -166,6 +175,8 @@ def save_meal(preference):
     session['preference'] = preference
     # redirect to next page
     return redirect(url_for('payment'))
+
+import random # to generate a random booking reference number
 
 @app.route("/payment",methods=['GET','POST'])
 def payment():
@@ -294,58 +305,135 @@ def cancel(booking_id,booking_ref):
         return f"Sorry, error occured: {e}"
 
 
+# bcrypt for hashing
+bcrypt = Bcrypt(app)
+
+# setting up loginManager (flask-login library)
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# user loader
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
+
 # flights can be added/edited/deleted to flights database on this page
 @app.route("/admin",methods=['GET','POST'])
 def admin():
-    if request.method=='GET':
-        # get all flights so we can show them on the page
-        all_flights = Flight.query.all()
-        return render_template('admin.html',all_flights=all_flights)
-    elif request.method=='POST':
-        cityFrom = request.form['cityFrom']
-        cityTo = request.form['cityTo']
-        departDate = request.form['departDate']
-        arrivalDate = request.form['arrivalDate']
-        departTime = request.form['departTime']
-        arrivalTime = request.form['arrivalTime']
-        fclass = request.form['fclass']
-        duration = request.form['duration']
-        price = request.form['price']
-        new_flight = Flight(cityFrom=cityFrom,cityTo=cityTo,departDate=departDate,arrivalDate=arrivalDate,departTime=departTime,arrivalTime=arrivalTime,duration=duration,fclass=fclass,price=price)
-        db.session.add(new_flight)
-        db.session.commit()
-        # refresh the page
-        return redirect(url_for('admin'))
+    if current_user.is_authenticated:
+        if request.method=='GET':
+            # get all flights so we can show them on the page
+            all_flights = Flight.query.all()
+            return render_template('admin.html',all_flights=all_flights)
+        elif request.method=='POST':
+            cityFrom = request.form['cityFrom']
+            cityTo = request.form['cityTo']
+            departDate = request.form['departDate']
+            arrivalDate = request.form['arrivalDate']
+            departTime = request.form['departTime']
+            arrivalTime = request.form['arrivalTime']
+            fclass = request.form['fclass']
+            duration = request.form['duration']
+            price = request.form['price']
+            new_flight = Flight(cityFrom=cityFrom,cityTo=cityTo,departDate=departDate,arrivalDate=arrivalDate,departTime=departTime,arrivalTime=arrivalTime,duration=duration,fclass=fclass,price=price)
+            db.session.add(new_flight)
+            db.session.commit()
+            # refresh the page
+            return redirect(url_for('admin'))
+    else:
+        flash("Please login to access admin panel")
+        return redirect(url_for('login'))
 
 # delete a flight from admin panel
 @app.route('/admin/delete/<int:num>')
+@login_required # protects these pages from being accessed by unauthenticated people
 def delete(num):
     flight_to_delete = Flight.query.filter_by(num=num).first()
-    db.session.delete(flight_to_delete)
-    db.session.commit()
-    return redirect(url_for('admin'))
+    if flight_to_delete:
+        db.session.delete(flight_to_delete)
+        db.session.commit()
+        return redirect(url_for('admin'))
+    else:
+        return "Flight doesn't exist"
 
 # edit a flight from admin panel
 @app.route('/admin/edit/<int:num>',methods=['GET','POST'])
+@login_required # protects these pages from being accessed by unauthenticated people
 def edit(num):
-    if request.method=='GET':
-        flight_to_edit = Flight.query.filter_by(num=num).first()
-        return render_template('edit.html',flight_to_edit=flight_to_edit)
-    elif request.method=='POST':
-        flight_to_edit = Flight.query.filter_by(num=num).first()
-        # edit database when user submits edit form
-        flight_to_edit.cityFrom=request.form['cityFrom']
-        flight_to_edit.cityTo=request.form['cityTo']
-        flight_to_edit.departDate=request.form['departDate']
-        flight_to_edit.arrivalDate=request.form['arrivalDate']
-        flight_to_edit.departTime=request.form['departTime']
-        flight_to_edit.arrivalTime=request.form['arrivalTime']
-        flight_to_edit.fclass=request.form['fclass']
-        flight_to_edit.duration=request.form['duration']
-        flight_to_edit.price=request.form['price']
-        db.session.commit()
-        return redirect(url_for('admin'))
+    flight_to_edit = Flight.query.filter_by(num=num).first()
+    if flight_to_edit:
+        if request.method=='GET':
+            return render_template('edit.html',flight_to_edit=flight_to_edit)
+        elif request.method=='POST':
+            # edit database when user submits edit form
+            flight_to_edit.cityFrom=request.form['cityFrom']
+            flight_to_edit.cityTo=request.form['cityTo']
+            flight_to_edit.departDate=request.form['departDate']
+            flight_to_edit.arrivalDate=request.form['arrivalDate']
+            flight_to_edit.departTime=request.form['departTime']
+            flight_to_edit.arrivalTime=request.form['arrivalTime']
+            flight_to_edit.fclass=request.form['fclass']
+            flight_to_edit.duration=request.form['duration']
+            flight_to_edit.price=request.form['price']
+            db.session.commit()
+            return redirect(url_for('admin'))
+    else:
+        return "Flight doesn't exist"
 
+
+# create new admin account
+@app.route('/admin/create',methods=['GET','POST'])
+def create():
+    if current_user.is_authenticated:
+        flash('You are already logged in.')
+        return redirect(url_for('admin'))
+    else:
+        if request.method=='GET':
+            return render_template('create.html')
+        elif request.method=='POST':
+            # get username and pass that user put in
+            username=request.form['username']
+            password=request.form['password']
+            # generate hash from password using bcrypt
+            hash = bcrypt.generate_password_hash(password).decode('utf-8')
+            # add new admin to database
+            new_admin = Admin(username=username,hash=hash)
+            db.session.add(new_admin)
+            db.session.commit()
+            # take them to login page after user has been created
+            return redirect(url_for('login'))
+
+# login to existing admin account
+@app.route('/admin/login',methods=['GET','POST'])
+def login():
+    if current_user.is_authenticated:
+        flash('You are already logged in.')
+        return redirect(url_for('admin'))
+    else:
+        if request.method=='GET':
+            return render_template('login.html')
+        elif request.method=='POST':
+            username=request.form['username']
+            password=request.form['password']
+            # generating hash again and checking doesnt work because bcrypt automatically adds a random salt,so the hashes dont match
+            # we need to use check_password_hash instead
+            admin = Admin.query.filter_by(username=username).first()
+            
+            if bcrypt.check_password_hash(admin.hash,password):
+                # using built in flask-login library functions to login the admin
+                login_user(admin)
+                flash('Successfully logged in')
+                return redirect(url_for('admin'))
+            else:
+                flash("Incorrect credentials!")
+                return redirect(url_for('login'))
+
+@app.route('/admin/logout')
+def logout():
+    logout_user()
+    flash('Successfully logged out.')
+    return redirect(url_for('login'))
+    
 if __name__=="__main__":
     with app.app_context():
         db.create_all()

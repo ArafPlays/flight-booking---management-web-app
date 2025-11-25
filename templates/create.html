@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{%block title%}Create Admin Account{%endblock%}
+{%block body%}
+    <form method="post">
+        <h2>Create Admin Account</h2>
+        <p>Note: Username needs to be unique.</p>
+        <label for="username">Username:</label>
+        <input type="text" name="username"/>
+        <label for="password">Password:</label>
+        <input type="password" name="password"/>
+        <button type="submit">Register</button>
+    </form>
+{%endblock%}
