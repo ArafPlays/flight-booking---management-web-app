@@ -442,7 +442,7 @@ def login():
             # we need to use check_password_hash instead
             admin = Admin.query.filter_by(username=username).first()
             # check if user provided password's hash and database stored hash matches
-            if bcrypt.check_password_hash(admin.hash,password):
+            if admin and bcrypt.check_password_hash(admin.hash,password):
                 # using built in flask-login library functions to login the admin
                 login_user(admin)
                 flash('Successfully logged in')
@@ -461,4 +461,4 @@ def logout():
 if __name__=="__main__":
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',port=8000)
