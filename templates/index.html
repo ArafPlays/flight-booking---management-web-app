@@ -1,6 +1,9 @@
 {%extends 'base.html'%}
 {%block title%}Booking Page{%endblock%}
 {%block body%}
+    <h2 class="display-5">Flight Booking System</h2>
+    <p>Admins can create, edit, delete flights in <a href="{{url_for('create')}}">admin panel</a> (feel free to create an account to test).</p>
+    <p>Users can search for these flights, book them, and manage or cancel their bookings.</p>
     <form method="post" style="background-color: #910c00;color:white" class="px-md-5 px-4 py-4 mb-3">
         <h2 class="display-5 mb-4">Where to..?</h2>
         <div class="row">
