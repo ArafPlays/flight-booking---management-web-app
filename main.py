@@ -89,11 +89,19 @@ def index():
     elif request.method=='POST':
         # clear session first to avoid any collisions
         session.clear()
-        # if submit button is clicked, check if cityFrom and cityTo is same.
+
+        # check if cityFrom and cityTo is same.
         if request.form['cityFrom']==request.form['cityTo']:
             # flash message and refresh if cities are same.
             flash("From and to cities must be different.")
             return redirect(url_for('index'))
+        
+        # check if return date comes before departure date
+        if request.form['departDate']>request.form['returnDate']:
+            # flash message 
+            flash("Depart date must come before return date.")
+            return redirect(url_for('index'))
+        
         # after checking, save to session
         session['cityFrom'] = request.form['cityFrom']
         session['cityTo'] = request.form['cityTo']
@@ -358,6 +366,12 @@ def admin():
                 flash("From and to cities must be different.")
                 return redirect(url_for('admin'))
             
+            # check if return date comes before departure date
+            if request.form['departDate']>request.form['arrivalDate']:
+                # flash message 
+                flash("Depart date must come before arrival date.")
+                return redirect(url_for('admin'))
+            
             cityFrom = request.form['cityFrom']
             cityTo = request.form['cityTo']
             departDate = request.form['departDate']
@@ -404,7 +418,14 @@ def edit(num):
                 # flash message and refresh if cities are same.
                 flash("From and to cities must be different.")
                 return redirect(url_for('edit',num=num))
-            # edit database when user submits edit form
+            
+            # check if return date comes before departure date
+            if request.form['departDate']>request.form['arrivalDate']:
+                # flash message 
+                flash("Depart date must come before arrival date.")
+                return redirect(url_for('edit',num=num))
+            
+            # edit database when user submits edit form and checks are done
             flight_to_edit.cityFrom=request.form['cityFrom']
             flight_to_edit.cityTo=request.form['cityTo']
             flight_to_edit.departDate=request.form['departDate']
@@ -415,6 +436,7 @@ def edit(num):
             flight_to_edit.duration=request.form['duration']
             flight_to_edit.price=request.form['price']
             db.session.commit()
+            flash("Changes saved.")
             return redirect(url_for('admin'))
     else:
         return "Flight doesn't exist"
