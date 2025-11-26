@@ -430,6 +430,7 @@ def create():
             db.session.add(new_admin)
             db.session.commit()
             # take them to login page after user has been created
+            flash("Account created successfully.")
             return redirect(url_for('login'))
 
 # login to existing admin account
