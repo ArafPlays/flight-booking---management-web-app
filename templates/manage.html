@@ -1,51 +1,53 @@
 {%extends 'base.html'%}
 {%block title%}Manage Booking{%endblock%}
 {%block body%}
-    <h2 class="display-5">Edit Booking ID {{booking.id}} (Ref: {{booking.ref}})</h2>
 
-    
-    <!-- take user to confirmed function along with url query parameters -->
-    <a href="{{url_for('confirmed',booking_id=booking.id,booking_ref=booking.ref)}}">View full booking details</a>
-    <br/><br/>
-    <form method="post">
-        <!-- update contact (email,phone) details -->
-        <div>
-            <h4>Update contact details</h4>
-            <label for="email" >Email: </label>
-            <input type="email" name="email" value="{{booking.email}}"/><br/>
-            <label for="phone" >Phone: </label>
-            <input type="tel" name="phone" value="{{booking.phone}}"/><br/>
-        </div>
+    <div class="card col-lg-8 px-5 py-5">
 
-        <br/>
-        
-        <div>
-            <h4>Update passenger details</h4>
-            {% for p in passengers %}
-                <label for="fname{{p}}" >First name: </label>
-                <input type="text" name="fname{{p.id}}" value="{{p.fname}}"/><br/>
-                <label for="lname{{p}}" >Last name: </label>
-                <input type="text" name="lname{{p.id}}" value="{{p.lname}}"/><br/><br/>
-            {%endfor%}
-        </div>
+        <h2 class="display-5">Edit Booking ID {{booking.id}} (Ref: {{booking.ref}})</h2>
 
-        <div>
-            <h4>Update meal</h4>
-            <label for="meal">Meal: </label>
-            <select name="meal">
-                <!-- the if statement pre selects current meal -->
-                <option value="No preference" {%if booking.meal=='No preference'%}selected{%endif%}>No preference</option>
-                <option value="Halal" {%if booking.meal=='Halal'%}selected{%endif%}>Halal</option>
-                <option value="Kosher" {%if booking.meal=='Kosher'%}selected{%endif%}>Kosher</option>
-                <option value="Veg" {%if booking.meal=='Veg'%}selected{%endif%}>Veg</option>
-            </select>
+        <!-- take user to confirmed function along with url query parameters -->
+        <a href="{{url_for('confirmed',booking_id=booking.id,booking_ref=booking.ref)}}">View full booking details</a>
+        <br/><br/>
+        <form method="post">
+            <!-- update contact (email,phone) details -->
+            <div>
+                <h4>Update contact details</h4>
+                <label for="email" class="form-label">Email: </label>
+                <input class="form-control" type="email" name="email" value="{{booking.email}}"/><br/>
+                <label for="phone" class="form-label">Phone: </label>
+                <input class="form-control" type="tel" name="phone" value="{{booking.phone}}"/><br/>
+            </div>
+
             <br/>
-        </div>
+            
+            <div>
+                <h4>Update passenger(s) details</h4>
+                {% for p in passengers %}
+                    <label for="fname{{p}}" class="form-label">First name: </label>
+                    <input class="form-control" type="text" name="fname{{p.id}}" value="{{p.fname}}"/><br/>
+                    <label for="lname{{p}}" class="form-label">Last name: </label>
+                    <input class="form-control" type="text" name="lname{{p.id}}" value="{{p.lname}}"/><br/><br/>
+                {%endfor%}
+            </div>
 
+            <div>
+                <h4>Update meal</h4>
+                <select name="meal" class="form-select">
+                    <!-- the if statement pre selects current meal -->
+                    <option value="No preference" {%if booking.meal=='No preference'%}selected{%endif%}>No preference</option>
+                    <option value="Halal" {%if booking.meal=='Halal'%}selected{%endif%}>Halal</option>
+                    <option value="Kosher" {%if booking.meal=='Kosher'%}selected{%endif%}>Kosher</option>
+                    <option value="Veg" {%if booking.meal=='Veg'%}selected{%endif%}>Veg</option>
+                </select>
+                <br/>
+            </div>
+
+            <br/>
+
+            <button type="submit" class="btn btn-outline-primary">Save Changes</button>
+        </form>
         <br/>
-
-        <button type="submit" class="btn btn-outline-primary">Save Changes</button>
-    </form>
-    <br/>
-    <a href="{{url_for('cancel',booking_id=booking.id,booking_ref=booking.ref)}}">Delete Booking</a>
+        <a href="{{url_for('cancel',booking_id=booking.id,booking_ref=booking.ref)}}">Delete Booking</a>
+    </div>
 {%endblock%}
