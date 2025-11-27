@@ -15,7 +15,7 @@ from flask_bcrypt import Bcrypt # for hashing admin password
 import os
 
 app=Flask(__name__)
-app.secret_key = "^@^$Lrj$@$JJ223828AJEJA2828$"
+app.secret_key = os.environ.get("SECRET_KEY")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
