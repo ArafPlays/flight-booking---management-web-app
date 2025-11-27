@@ -1,6 +1,6 @@
 from flask import Flask,render_template,request,session,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
+from flask_migrate import Migrate
 
 import random # to generate a random booking reference number
 from datetime import datetime # for working with dates and time
@@ -23,6 +23,7 @@ app.secret_key = os.environ.get("SECRET_KEY",'mjrajrjk294999$(@(@(.)))')
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL","sqlite:///test.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db=SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # convention class naming is uppercase. However, sqlite stores table name in lowercase
 # in this case, table name is flight.
@@ -70,7 +71,7 @@ class Booking(db.Model):
     depart_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=False)
     # using 2 foreign key to same key will cause an error here, 
     # we need to specify
-    return_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=False) # nullable false because it has to be 0 (no return) or a flight id
+    return_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=True) # nullable True because it can be None when there's no return flight
 
     # store booking preferences
     meal=db.Column('meal',db.String(10),nullable=False)
@@ -237,7 +238,7 @@ def payment():
 
         # if return date was kept empty, return flight number will be 0
         if session['returnDate'] =="":
-            return_flight_num=0
+            return_flight_num=None
         else:
             # if return date wasn't empty, customer will have already selected and saved a return flight number into session, we simply access and store it into a variable
             return_flight_num=session['return_num']
