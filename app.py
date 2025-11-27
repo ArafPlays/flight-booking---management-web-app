@@ -70,7 +70,7 @@ class Booking(db.Model):
     depart_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=False)
     # using 2 foreign key to same key will cause an error here, 
     # we need to specify
-    return_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=False) # nullable false because it has to be 0 (no return) or a flight id
+    return_flight_num=db.Column(db.Integer,db.ForeignKey('flight.num'),nullable=True) 
 
     # store booking preferences
     meal=db.Column('meal',db.String(10),nullable=False)
