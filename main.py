@@ -16,10 +16,9 @@ import os
 
 app=Flask(__name__)
 
-# key and database url is secured in deployment but a default key and SQLite database url is provided for local use.
-app.secret_key = os.environ.get("SECRET_KEY","testKey129Q$@$()")
+app.secret_key = os.environ.get("SECRET_KEY")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("TURSO_DATABASE_URL","sqlite:///test.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("TURSO_DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db=SQLAlchemy(app)
 
@@ -532,4 +531,4 @@ def logout():
 if __name__=="__main__":
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0',port=8000)
+    app.run(host='0.0.0.0')
