@@ -12,10 +12,12 @@ from flask_login import UserMixin
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_bcrypt import Bcrypt # for hashing admin password
 
+import os
+
 app=Flask(__name__)
 app.secret_key = "^@^$Lrj$@$JJ223828AJEJA2828$"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///fda.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db=SQLAlchemy(app)
 
