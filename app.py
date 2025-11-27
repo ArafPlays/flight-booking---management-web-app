@@ -20,7 +20,7 @@ app=Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY",'mjrajrjk294999$(@(@(.)))')
 
 # environment variable for database url. Also a default sqlite db for local users
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://flight_booking_postgresql_user:IIB5KAbUZMctxuikcJFAhJbUVXyUmGlq@dpg-d4ka6ikhg0os73ak1fig-a.oregon-postgres.render.com/flight_booking_postgresql"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL","sqlite:///test.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db=SQLAlchemy(app)
 migrate = Migrate(app, db)
