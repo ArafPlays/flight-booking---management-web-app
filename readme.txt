@@ -11,7 +11,8 @@ LOCAL SET UP
 1. Download/clone the repo
 
 2. Create virtual environment:
-   python -m venv venv
+   python3 -m venv venv #macOS/Linux
+   python -m venv venv # Windows
 
 3. Activate it:
    source venv/bin/activate  # macOS/Linux
