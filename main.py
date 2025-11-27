@@ -16,9 +16,10 @@ import os
 
 app=Flask(__name__)
 
-app.secret_key = os.environ.get("SECRET_KEY")
+# adding environment variables
+app.secret_key = os.environ.get("SECRET_KEY",'mjrajrjk294999$(@(@(.)))')
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("TURSO_DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("TURSO_DATABASE_URL","sqlite:///test.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db=SQLAlchemy(app)
 
